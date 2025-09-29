@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "can-ids",
+			"path": "../../../PlatformIO/Projects/can-ids"
+		}
+	],
+	"settings": {}
+}
