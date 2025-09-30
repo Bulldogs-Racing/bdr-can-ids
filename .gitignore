@@ -1,3 +1,4 @@
 # vscode-management/
 # uncomment the above to ignore everything in the vscode-management directory
 vscode-management/.pio/libdeps/teensy41/FlexCAN_T4
+.vscode
