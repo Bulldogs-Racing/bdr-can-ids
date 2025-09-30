@@ -23,6 +23,10 @@
     */
 
     // Top-level CanMessage so .cpp can define globals easily
+
+    #ifndef bdrcanlib_h
+    #define bdrcanlib_h
+    #include "Arduino.h"
     struct CanMessage {
         String name;      // main name
         uint32_t id;       // CAN ID
