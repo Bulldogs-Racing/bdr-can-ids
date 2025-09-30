@@ -21,24 +21,12 @@
     DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-    (MIT License)
-*/
-
-#ifndef BRDCANLIB_H
-#define BRDCANLIB_H
-
-#include <Arduino.h>  // always include Arduino core
-#include <FlexCAN_T4.h>  // include the FlexCAN library
-
-class BDRCANLib {
-public:
-    BDRCANLib();   // constructor
-    void begin();         // initialization
-
+    // Top-level CanMessage so .cpp can define globals easily
     struct CanMessage {
+        String name;      // main name
         uint32_t id;       // CAN ID
-        String notes;      // alternate name
-        int byte;
+        String alt;     // alternative name
+        String byte;
         int bit_start;
         int length;
         float min;
@@ -46,7 +34,6 @@ public:
         float scale;
         String units;
         String description;
-        
     };
 
     struct messageStruct {
@@ -55,57 +42,71 @@ public:
         uint8_t length;
     };
 
-    messageStruct createMessage(uint32_t id, const uint8_t* data, uint8_t length);
+    class BDRCANLib {
+    public:
+        BDRCANLib();   // constructor
 
-private:
-// CAN messages
-    CanMessage Set_AC_Current;
-    CanMessage Set_Brake_Current;
-    CanMessage Set_ERPM;
-    CanMessage Set_Position;
-    CanMessage Set_Relative_Current;
-    CanMessage Set_Relative_Brake_Current;
-    CanMessage Set_Digital_Output_1;
-    CanMessage Set_Digital_Output_2;
-    CanMessage Set_Digital_Output_3;
-    CanMessage Set_Digital_Output_4;
-    CanMessage Max_AC_Current;
-    CanMessage Set_Maximum_AC_Brake_Current;
-    CanMessage Max_DC_Current;
-    CanMessage Set_Maximum_DC_Brake_Current;
-    CanMessage Drive_Enable;
+        // Convert a numeric string with comma decimals to float
+        static float conv_to_dec(const String& s);
+
+        messageStruct createMessage(uint32_t id, const uint8_t* data, uint8_t length);
+    };
+
+    // Global CAN message descriptors (defined in bdrcanlib.cpp)
+    extern CanMessage Set_AC_Current;
+    extern CanMessage Set_Brake_Current;
+    extern CanMessage Set_ERPM;
+    extern CanMessage Set_Position;
+    extern CanMessage Set_Relative_Current;
+    extern CanMessage Set_Relative_Brake_Current;
+    extern CanMessage Set_Digital_Output_1;
+    extern CanMessage Set_Digital_Output_2;
+    extern CanMessage Set_Digital_Output_3;
+    extern CanMessage Set_Digital_Output_4;
+    extern CanMessage Max_AC_Current;
+    extern CanMessage Set_Maximum_AC_Brake_Current;
+    extern CanMessage Max_DC_Current;
+    extern CanMessage Set_Maximum_DC_Brake_Current;
+    extern CanMessage Drive_Enable;
 
     // Additional CAN messages
-    CanMessage erpm;
-    CanMessage duty_cycle;
-    CanMessage input_voltage;
-    CanMessage AC_current;
-    CanMessage DC_current;
-    CanMessage RESERVED_1;
-    CanMessage controller_temperature;
-    CanMessage motor_temperature;
-    CanMessage fault_code;
-    CanMessage RESERVED_2;
-    CanMessage Id;
-    CanMessage Iq;
-    CanMessage throttle_signal;
-    CanMessage brake_signal;
-    CanMessage digital_input_1;
-    CanMessage digital_input_2;
-    CanMessage digital_input_3;
-    CanMessage digital_input_4;
-    CanMessage digital_input_1_2;
-    CanMessage digital_input_2_2;
-    CanMessage digital_input_3_2;
-    CanMessage digital_input_4_2;
-    CanMessage drive_enable;
-    CanMessage capacitor_temp_limit;
-    CanMessage DC_current_limit;
-    CanMessage drive_enable_limit;
-    CanMessage igbt_acceleration_temperature_limit;
-    CanMessage igbt_temperature_limit;
-    CanMessage input_voltage_limit;
-    CanMessage motor_acceleration_temperature_limit;
+    extern CanMessage erpm;
+    extern CanMessage duty_cycle;
+    extern CanMessage input_voltage;
+    extern CanMessage AC_current;
+    extern CanMessage DC_current;
+    extern CanMessage RESERVED_1;
+    extern CanMessage controller_temperature;
+    extern CanMessage motor_temperature;
+    extern CanMessage fault_code;
+    extern CanMessage RESERVED_2;
+    extern CanMessage Id;
+    extern CanMessage Iq;
+    extern CanMessage throttle_signal;
+    extern CanMessage brake_signal;
+    extern CanMessage digital_input_1;
+    extern CanMessage digital_input_2;
+    extern CanMessage digital_input_3;
+    extern CanMessage digital_input_4;
+    extern CanMessage digital_input_1_2;
+    extern CanMessage digital_input_2_2;
+    extern CanMessage digital_input_3_2;
+    extern CanMessage digital_input_4_2;
+    extern CanMessage drive_enable;
+    extern CanMessage capacitor_temp_limit;
+    extern CanMessage DC_current_limit;
+    extern CanMessage drive_enable_limit;
+    extern CanMessage igbt_acceleration_temperature_limit;
+    extern CanMessage igbt_temperature_limit;
+    extern CanMessage input_voltage_limit;
+    extern CanMessage motor_acceleration_temperature_limit;
+    extern CanMessage motor_temperature_limit;
+    extern CanMessage RPM_min_limit;
+    extern CanMessage RPM_max_limit;
+    extern CanMessage power_limit;
+    extern CanMessage reserved_3;
+    extern CanMessage reserved_4;
+    extern CanMessage CAN_map_version;
     CanMessage motor_temperature_limit;
     CanMessage RPM_min_limit;
     CanMessage RPM_max_limit;

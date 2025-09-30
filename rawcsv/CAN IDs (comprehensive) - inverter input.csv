@@ -1,4 +1,3 @@
-pedalbox broadcast (output),,,,,,,,,,
 message name,packet id,notes,byte,bit start,length,min (post-scale),max (post-scale),scale,units,description
 Set AC Current,0x01,ac current,0-1,1,8,"-3276,8","3276,7",10,Aₚₖ,"This command sets the target motor AC current (peak, not RMS). When the controller receives this message, it automatically switches to current control mode. This value must not be above the limits of the inverter and must be multiplied by 10 before sending. This is a signed parameter, and the sign represents the direction of the torque which correlates with the motor AC current. (For the correlation, please refer to the motor parameters)"
 ,0x01,NOT USED,2-7,16,8,-,-,-,-,Not relevant to the command. Fill with FFs or use 2-byte DLC.

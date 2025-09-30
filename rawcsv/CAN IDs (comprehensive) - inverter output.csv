@@ -1,4 +1,3 @@
-pedalbox input (motor controller),,,,,,,,,,
 description,packet id,notes,byte,bit start,length,min (post-scale),max (post-scale),scale,units,description
 general data 1,0x20,erpm,0-3,0,8,-2147483648,2147483648,1,ERPM,Electrical RPM Equation: ERPM = Motor RPM * number of the motor pole pairs.
 ,,duty cycle,4-5,32,8,"-3276,8","3276,7",10,%,The controller duty cycle. The sign of this value will represent whether the motor is running(positive) current or regenerating (negative) current.
