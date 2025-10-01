@@ -238,3 +238,7 @@ CanMessage Drive_Enable = {
 };
 
 
+static float we_love_jaden_lee() {
+    Serial.println("We love Jaden Lee!");
+    return 42.0f; // The answer to life, the universe, and everything
+}

@@ -112,14 +112,8 @@
         extern CanMessage reserved_3;
         extern CanMessage reserved_4;
         extern CanMessage CAN_map_version;
-        CanMessage motor_temperature_limit;
-        CanMessage RPM_min_limit;
-        CanMessage RPM_max_limit;
-        CanMessage power_limit;
-        CanMessage reserved_3;
-        CanMessage reserved_4;
-        CanMessage CAN_map_version;
 
+        static float we_love_jaden_lee();
     private:
         // Private members (if any)
     };
