@@ -55,6 +55,11 @@
         static float conv_to_dec(const String& s);
 
         messageStruct createMessage(uint32_t id, const uint8_t* data, uint8_t length);
+
+        static float we_love_jaden_lee();
+    private:
+        // Private members (if any)
+    };
     
 
 // Global CAN message descriptors (defined in bdrcanlib.cpp)
@@ -113,9 +118,6 @@ extern const CanMessage reserved_3;
 extern const CanMessage reserved_4;
 extern const CanMessage CAN_map_version;
 
-        static float we_love_jaden_lee();
-    private:
-        // Private members (if any)
-    };
+    
 
 #endif
