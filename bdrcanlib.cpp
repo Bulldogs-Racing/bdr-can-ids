@@ -236,6 +236,539 @@ const CanMessage Drive_Enable = {
     "0: Drive not allowed 1: Drive allowed Only 0 and 1 values are accepted. Must be sent periodically to be enabled. Refer to chapter 4.3"
 };
 
+const CanMessage erpm = {
+    "ERPM",
+    0x10,
+    "Motor speed",
+    "0-3",
+    0,
+    8,
+    -2147483648.0f,
+    2147483647.0f,
+    1.0f,
+    "ERPM",
+    "The current motor speed in ERPM. Equation: ERPM = Motor RPM * number of the motor pole pairs."
+};
+
+const CanMessage duty_cycle = {
+    "Duty Cycle",
+    0x11,
+    "Current duty cycle",
+    "0-1",
+    0,
+    8,
+    -100.0f,
+    100.0f,
+    10.0f,
+    "%",
+    "The current duty cycle of the inverter. This is a signed parameter, and the sign represents the direction of the spinning. The value must be divided by 10 after receiving."
+};
+
+const CanMessage input_voltage = {
+    "Input Voltage",
+    0x12,
+    "Current input voltage",
+    "0-1",
+    0,
+    8,
+    0.0f,
+    6553.5f,
+    10.0f,
+    "V",
+    "The current DC input voltage of the inverter. The value must be divided by 10 after receiving."
+};
+
+const CanMessage AC_current = {
+    "AC Current",
+    0x13,
+    "Current motor AC current",
+    "0-1",
+    0,
+    8,
+    -3276.8f,
+    3276.7f,
+    10.0f,
+    "A_pk",
+    "The current motor AC current (peak, not RMS). This is a signed parameter, and the sign represents the direction of the torque which correlates with the motor AC current. The value must be divided by 10 after receiving."
+};
+
+const CanMessage DC_current = {
+    "DC Current",
+    0x14,
+    "Current input DC current",
+    "0-1",
+    0,
+    8,
+    -3276.8f,
+    3276.7f,
+    10.0f,
+    "A",
+    "The current DC input current of the inverter. This is a signed parameter, and the sign represents the direction of the current (discharge/charge). The value must be divided by 10 after receiving."
+};
+
+const CanMessage RESERVED_1 = {
+    "RESERVED_1",
+    0x15,
+    "",
+    "",
+    0,
+    8,
+    0.0f,
+    0.0f,
+    1.0f,
+    "",
+    "Reserved for future use"
+};
+
+const CanMessage controller_temperature = {
+    "Controller Temperature",
+    0x16,
+    "Current controller temperature",
+    "0-1",
+    0,
+    8,
+    -40.0f,
+    215.0f,
+    1.0f,
+    "°C",
+    "The current temperature of the controller. The value must be divided by 1 after receiving."
+};
+
+const CanMessage motor_temperature = {
+    "Motor Temperature",
+    0x17,
+    "Current motor temperature",
+    "0-1",
+    0,
+    8,
+    -40.0f,
+    215.0f,
+    1.0f,
+    "°C",
+    "The current temperature of the motor (if motor temperature sensor is used). The value must be divided by 1 after receiving."
+};
+
+const CanMessage fault_code = {
+    "Fault Code",
+    0x18,
+    "Current fault code",
+    "0-1",
+    0,
+    8,
+    0.0f,
+    65535.0f,
+    1.0f,
+    "#",
+    "The current fault code of the controller. Refer to chapter 5 for the fault code list."
+};
+
+const CanMessage RESERVED_2 = {
+    "RESERVED_2",
+    0x19,
+    "",
+    "",
+    0,
+    8,
+    0.0f,
+    0.0f,
+    1.0f,
+    "",
+    "Reserved for future use"
+};
+
+const CanMessage Id = {
+    "Id",
+    0x1A,
+    "Current d-axis current",
+    "0-1",
+    0,
+    8,
+    -3276.8f,
+    3276.7f,
+    10.0f,
+    "A_pk",
+    "The current d-axis current of the motor. The value must be divided by 10 after receiving."
+};
+
+const CanMessage Iq = {
+    "Iq",
+    0x1B,
+    "Current q-axis current",
+    "0-1",
+    0,
+    8,
+    -3276.8f,
+    3276.7f,
+    10.0f,
+    "A_pk",
+    "The current q-axis current of the motor. The value must be divided by 10 after receiving."
+};
+
+const CanMessage throttle_signal = {
+    "Throttle Signal",
+    0x1C,
+    "Current throttle signal",
+    "0-1",
+    0,
+    8,
+    0.0f,
+    100.0f,
+    10.0f,
+    "%",
+    "The current throttle signal value. The value must be divided by 10 after receiving."
+};
+
+const CanMessage brake_signal = {
+    "Brake Signal",
+    0x1D,
+    "Current brake signal",
+    "0-1",
+    0,
+    8,
+    0.0f,
+    100.0f,
+    10.0f,
+    "%",
+    "The current brake signal value. The value must be divided by 10 after receiving."
+};
+
+const CanMessage digital_input_1 = {
+    "Digital Input 1",
+    0x1E,
+    "Current state of digital input 1",
+    "0",
+    0,
+    8,
+    0.0f,
+    1.0f,
+    1.0f,
+    "#",
+    "The current state of the digital input 1. 0: LOW, 1: HIGH"
+};
+
+const CanMessage digital_input_2 = {
+    "Digital Input 2",
+    0x1E,
+    "Current state of digital input 2",
+    "0",
+    1,
+    8,
+    0.0f,
+    1.0f,
+    1.0f,
+    "#",
+    "The current state of the digital input 2. 0: LOW, 1: HIGH"
+};
+
+const CanMessage digital_input_3 = {
+    "Digital Input 3",
+    0x1E,
+    "Current state of digital input 3",
+    "0",
+    2,
+    8,
+    0.0f,
+    1.0f,
+    1.0f,
+    "#",
+    "The current state of the digital input 3. 0: LOW, 1: HIGH"
+};
+
+const CanMessage digital_input_4 = {
+    "Digital Input 4",
+    0x1E,
+    "Current state of digital input 4",
+    "0",
+    3,
+    8,
+    0.0f,
+    1.0f,
+    1.0f,
+    "#",
+    "The current state of the digital input 4. 0: LOW, 1: HIGH"
+};
+
+const CanMessage digital_input_1_2 = {
+    "Digital Input 1 (alt)",
+    0x1F,
+    "Current state of digital input 1",
+    "0",
+    0,
+    8,
+    0.0f,
+    1.0f,
+    1.0f,
+    "#",
+    "The current state of the digital input 1. 0: LOW, 1: HIGH"
+};
+
+const CanMessage digital_input_2_2 = {
+    "Digital Input 2 (alt)",
+    0x1F,
+    "Current state of digital input 2",
+    "0",
+    1,
+    8,
+    0.0f,
+    1.0f,
+    1.0f,
+    "#",
+    "The current state of the digital input 2. 0: LOW, 1: HIGH"
+};
+
+const CanMessage digital_input_3_2 = {
+    "Digital Input 3 (alt)",
+    0x1F,
+    "Current state of digital input 3",
+    "0",
+    2,
+    8,
+    0.0f,
+    1.0f,
+    1.0f,
+    "#",
+    "The current state of the digital input 3. 0: LOW, 1: HIGH"
+};
+
+const CanMessage digital_input_4_2 = {
+    "Digital Input 4 (alt)",
+    0x1F,
+    "Current state of digital input 4",
+    "0",
+    3,
+    8,
+    0.0f,
+    1.0f,
+    1.0f,
+    "#",
+    "The current state of the digital input 4. 0: LOW, 1: HIGH"
+};
+
+const CanMessage drive_enable = {
+    "Drive Enable (alt)",
+    0x20,
+    "Current drive enable state",
+    "0",
+    0,
+    8,
+    0.0f,
+    1.0f,
+    1.0f,
+    "#",
+    "The current drive enable state. 0: Drive not allowed, 1: Drive allowed"
+};
+
+const CanMessage capacitor_temp_limit = {
+    "Capacitor Temp Limit",
+    0x21,
+    "Current capacitor temperature limit",
+    "0-1",
+    0,
+    8,
+    -40.0f,
+    215.0f,
+    1.0f,
+    "°C",
+    "The current capacitor temperature limit. The value must be divided by 1 after receiving."
+};
+
+const CanMessage DC_current_limit = {
+    "DC Current Limit",
+    0x22,
+    "Current DC current limit",
+    "0-1",
+    0,
+    8,
+    0.0f,
+    3276.7f,
+    10.0f,
+    "A",
+    "The current DC current limit. The value must be divided by 10 after receiving."
+};
+
+const CanMessage drive_enable_limit = {
+    "Drive Enable Limit",
+    0x23,
+    "Current drive enable limit",
+    "0",
+    0,
+    8,
+    0.0f,
+    1.0f,
+    1.0f,
+    "#",
+    "Drive enable limit active // 0: Drive enable limit inactive // Indicates whether the drive enable limitation is active or inactive. Used for software development purposes. For true indication of the drive state please use byte 3, bit 24 of this message."
+};
+
+const CanMessage igbt_acceleration_temperature_limit = {
+    "IGBT Acceleration Temp Limit",
+    0x24,
+    "Current IGBT acceleration temperature limit",
+    "0-1",
+    0,
+    8,
+    -40.0f,
+    215.0f,
+    1.0f,
+    "°C",
+    "The current IGBT acceleration temperature limit. The value must be divided by 1 after receiving."
+};
+
+const CanMessage igbt_temperature_limit = {
+    "IGBT Temperature Limit",
+    0x25,
+    "Current IGBT temperature limit",
+    "0-1",
+    0,
+    8,
+    -40.0f,
+    215.0f,
+    1.0f,
+    "°C",
+    "The current IGBT temperature limit. The value must be divided by 1 after receiving."
+};
+
+const CanMessage input_voltage_limit = {
+    "Input Voltage Limit",
+    0x26,
+    "Current input voltage limit",
+    "0-1",
+    0,
+    8,
+    0.0f,
+    6553.5f,
+    10.0f,
+    "V",
+    "The current input voltage limit. The value must be divided by 10 after receiving."
+};
+
+const CanMessage motor_acceleration_temperature_limit = {
+    "Motor Acceleration Temp Limit",
+    0x27,
+    "Current motor acceleration temperature limit",
+    "0-1",
+    0,
+    8,
+    -40.0f,
+    215.0f,
+    1.0f,
+    "°C",
+    "The current motor acceleration temperature limit. The value must be divided by 1 after receiving."
+};
+
+const CanMessage motor_temperature_limit = {
+    "Motor Temperature Limit",
+    0x28,
+    "Current motor temperature limit",
+    "0-1",
+    0,
+    8,
+    -40.0f,
+    215.0f,
+    1.0f,
+    "°C",
+    "The current motor temperature limit. The value must be divided by 1 after receiving."
+};
+
+const CanMessage RPM_min_limit = {
+    "RPM Min Limit",
+    0x29,
+    "Current minimum RPM limit",
+    "0-1",
+    0,
+    8,
+    -2147483648.0f,
+    2147483647.0f,
+    1.0f,
+    "RPM",
+    "The current minimum RPM limit. This is a signed parameter, and the sign represents the direction of the spinning. The value must be divided by 1 after receiving."
+};
+
+const CanMessage RPM_max_limit = {
+    RPM max limit, ,
+    41,8,0,1,1,"#",1: RPM max limit active // 0: RPM max limit inactive
+    "RPM max limit active // 0: RPM max limit inactive"
+};
+
+const CanMessage power_limit = {
+    "Power Limit",
+    0x2B,
+    "Current power limit",
+    "0-1",
+    0,
+    8,
+    0.0f,
+    32767.0f,
+    1.0f,
+    "kW",
+    "Power limit by configuration active // 0: Power limit by configuration inactive"
+};
+
+const CanMessage reserved_3 = {
+    "Reserved 3",
+    0x2C,
+    "",
+    "",
+    0,
+    8,
+    0.0f,
+    0.0f,
+    1.0f,
+    "",
+    "set to 0"
+};
+const CanMessage reserved_4 = {
+    "Reserved 4",
+    0x2D,
+    "",
+    "",
+    0,
+    8,
+    0.0f,
+    0.0f,
+    1.0f,
+    "",
+    "Reserved for future use"
+};
+
+const CanMessage CAN_map_version = {
+    "CAN Map Version",
+    0x2E,
+    "Version of the CAN map",
+    "0-1",
+    0,
+    8,
+    0.0f,
+    255.0f,
+    1.0f,
+    "#",
+    "Indicates the CAN map version. For ex: 23 -> 2,3 (V2,3)"
+};
+
+
+
+const CanMessage[] ALL_MESSAGES = {
+    Set_AC_Current,
+    Set_Brake_Current,
+    Set_ERPM,
+    Set_Position,
+    Set_Relative_Current,
+    Set_Relative_Brake_Current,
+    Set_Digital_Output_1,
+    Set_Digital_Output_2,
+    Set_Digital_Output_3,
+    Set_Digital_Output_4,
+    Max_AC_Current,
+    Set_Maximum_AC_Brake_Current,
+    Max_DC_Current,
+    Set_Maximum_DC_Brake_Current,
+    Drive_Enable
+
+
+};
+
+const int NUM_MESSAGES = sizeof(ALL_MESSAGES);
+
 
 float BDRCANLib::we_love_jaden_lee() {
     Serial.println("We love Jaden Lee!");
