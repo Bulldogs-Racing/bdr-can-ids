@@ -4,7 +4,7 @@
 BDRCANLib::BDRCANLib() {
     // constructor body left intentionally empty — real init can go in begin()
 }
-BDRCANLib::messageStruct BDRCANLib::createMessage(uint32_t id, const uint8_t* data, uint8_t length) {
+messageStruct BDRCANLib::createMessage(uint32_t id, const uint8_t* data, uint8_t length) {
     messageStruct m;
     m.id = id;
     m.length = length;

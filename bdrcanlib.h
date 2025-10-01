@@ -41,6 +41,12 @@
         const char* description;
     };
 
+    struct messageStruct {
+        uint32_t id;
+        uint8_t data[8];
+        uint8_t length;
+    };
+
     class BDRCANLib {
     public:
         BDRCANLib();   // constructor
@@ -51,12 +57,6 @@
         messageStruct createMessage(uint32_t id, const uint8_t* data, uint8_t length);
 
         static float we_love_jaden_lee();
-
-        struct messageStruct {
-            uint32_t id;
-            uint8_t data[8];
-            uint8_t length;
-        };
     private:
         // Private members (if any)
     };
