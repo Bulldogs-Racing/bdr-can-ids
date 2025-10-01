@@ -57,6 +57,7 @@
         messageStruct createMessage(uint32_t id, const uint8_t* data, uint8_t length);
     };
 
+    private:
     // Global CAN message descriptors (defined in bdrcanlib.cpp)
     extern CanMessage Set_AC_Current;
     extern CanMessage Set_Brake_Current;
