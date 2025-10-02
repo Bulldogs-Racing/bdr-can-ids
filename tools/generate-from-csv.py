@@ -33,12 +33,12 @@ with open(path, newline='', encoding='utf-8') as f:
             val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11 = row
             
             # auto-generate a unique struct name from val1 or row index
-            struct_name = val1.replace(" ", "_").replace("-", "_") + f"_{i}"
-            if mode == "output":
-                val3 = val3.replace(" ", "_").replace("-", "_")  # ensure val3 is a valid identifier
+            struct_name = val3.replace(" ", "_").replace("-", "_") + f"_{i}"
+                
             
             # fill template
             if mode == "output":
+                val3 = val3.replace(" ", "_").replace("-", "_")  # ensure val3 is a valid identifier
                 code = template.format(
                     name=val3,
                     val1=val1,
@@ -55,10 +55,10 @@ with open(path, newline='', encoding='utf-8') as f:
                 )
             else:
                 code = template.format(
-                    name=struct_name,
+                    name=struct_name.replace(" ", "_").replace("-", "_"),
                     val1=val1,
                     val2=val2,
-                    val3=val3,
+                    val3=val3.replace(" ", "_").replace("-", "_"),
                     val4=val4,
                     val5=val5,
                     val6=val6,
