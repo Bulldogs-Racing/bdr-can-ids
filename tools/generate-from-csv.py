@@ -25,7 +25,7 @@ else:
     path = csv_file_paths[1]
 
 with open(path, newline='', encoding='utf-8') as f:
-    with open("task_complete.txt", 'w', encoding='utf-8') as out_f:
+    with open("tools/task_complete.txt", 'w', encoding='utf-8') as out_f:
         reader = csv.reader(f)
         header = next(reader)  # skip header if it exists
         for i, row in enumerate(reader, start=1):
