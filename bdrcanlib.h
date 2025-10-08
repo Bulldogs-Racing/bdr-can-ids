@@ -30,17 +30,17 @@
 
 struct CanMessage
 {
-    static constexpr char *name;  // main name
-    static constexpr uint32_t id; // CAN ID
-    static constexpr char *alt;   // alternative name
-    static constexpr char *byte;
-    static constexpr int bit_start;
-    static constexpr int length;
-    static constexpr float min;
-    static constexpr float max;
-    static constexpr float scale;
-    static constexpr char *units;
-    static constexpr char *description;
+    char *name;  // main name
+    uint32_t id; // CAN ID
+    char *alt;   // alternative name
+    char *byte;
+    int bit_start;
+    int length;
+    float min;
+    float max;
+    float scale;
+    char *units;
+    char *description;
 };
 
 struct messageStruct

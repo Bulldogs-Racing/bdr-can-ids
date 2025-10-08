@@ -32,7 +32,7 @@ float BDRCANLib::conv_to_dec(const String &s)
  * Define every CAN ID used in the system.
  * Add or modify as needed for your application.
  */
-constexpr CanMessage ac_current = {
+static constexpr CanMessage ac_current = {
     "Set AC Current",
     0x01,
     "ac_current",
