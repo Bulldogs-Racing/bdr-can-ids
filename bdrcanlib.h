@@ -28,17 +28,17 @@
     #define bdrcanlib_h
     #include "Arduino.h"
     struct CanMessage {
-        const char* name;      // main name
-        uint32_t id;           // CAN ID
-        const char* alt;       // alternative name
-        const char* byte;
-        int bit_start;
-        int length;
-        float min;
-        float max;
-        float scale;
-        const char* units;
-        const char* description;
+        constexpr char* name;      // main name
+        constexpr uint32_t id;           // CAN ID
+        constexpr char* alt;       // alternative name
+        constexpr char* byte;
+        constexpr int bit_start;
+        constexpr int length;
+        constexpr float min;
+        constexpr float max;
+        constexpr float scale;
+        constexpr char* units;
+        constexpr char* description;
     };
 
     struct messageStruct {
