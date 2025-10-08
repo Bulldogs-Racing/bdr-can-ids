@@ -67,62 +67,62 @@ private:
 };
 
 // Global CAN message descriptors (defined in bdrcanlib.cpp)
-extern constexpr CanMessage Set_AC_Current;
-extern constexpr CanMessage Set_Brake_Current;
-extern constexpr CanMessage Set_ERPM;
-extern constexpr CanMessage Set_Position;
-extern constexpr CanMessage Set_Relative_Current;
-extern constexpr CanMessage Set_Relative_Brake_Current;
-extern constexpr CanMessage Set_Digital_Output_1;
-extern constexpr CanMessage Set_Digital_Output_2;
-extern constexpr CanMessage Set_Digital_Output_3;
-extern constexpr CanMessage Set_Digital_Output_4;
-extern constexpr CanMessage Max_AC_Current;
-extern constexpr CanMessage Set_Maximum_AC_Brake_Current;
-extern constexpr CanMessage Max_DC_Current;
-extern constexpr CanMessage Set_Maximum_DC_Brake_Current;
-extern constexpr CanMessage Drive_Enable;
+extern const CanMessage Set_AC_Current;
+extern const CanMessage Set_Brake_Current;
+extern const CanMessage Set_ERPM;
+extern const CanMessage Set_Position;
+extern const CanMessage Set_Relative_Current;
+extern const CanMessage Set_Relative_Brake_Current;
+extern const CanMessage Set_Digital_Output_1;
+extern const CanMessage Set_Digital_Output_2;
+extern const CanMessage Set_Digital_Output_3;
+extern const CanMessage Set_Digital_Output_4;
+extern const CanMessage Max_AC_Current;
+extern const CanMessage Set_Maximum_AC_Brake_Current;
+extern const CanMessage Max_DC_Current;
+extern const CanMessage Set_Maximum_DC_Brake_Current;
+extern const CanMessage Drive_Enable;
 
 // Additional CAN messages
-extern constexpr CanMessage erpm;
-extern constexpr CanMessage duty_cycle;
-extern constexpr CanMessage input_voltage;
-extern constexpr CanMessage AC_current;
-extern constexpr CanMessage DC_current;
-extern constexpr CanMessage RESERVED_1;
-extern constexpr CanMessage controller_temperature;
-extern constexpr CanMessage motor_temperature;
-extern constexpr CanMessage fault_code;
-extern constexpr CanMessage RESERVED_2;
-extern constexpr CanMessage Id;
-extern constexpr CanMessage Iq;
-extern constexpr CanMessage throttle_signal;
-extern constexpr CanMessage brake_signal;
-extern constexpr CanMessage digital_input_1;
-extern constexpr CanMessage digital_input_2;
-extern constexpr CanMessage digital_input_3;
-extern constexpr CanMessage digital_input_4;
-extern constexpr CanMessage digital_input_1_2;
-extern constexpr CanMessage digital_input_2_2;
-extern constexpr CanMessage digital_input_3_2;
-extern constexpr CanMessage digital_input_4_2;
-extern constexpr CanMessage drive_enable;
-extern constexpr CanMessage capacitor_temp_limit;
-extern constexpr CanMessage DC_current_limit;
-extern constexpr CanMessage drive_enable_limit;
-extern constexpr CanMessage igbt_acceleration_temperature_limit;
-extern constexpr CanMessage igbt_temperature_limit;
-extern constexpr CanMessage input_voltage_limit;
-extern constexpr CanMessage motor_acceleration_temperature_limit;
-extern constexpr CanMessage motor_temperature_limit;
-extern constexpr CanMessage RPM_min_limit;
-extern constexpr CanMessage RPM_max_limit;
-extern constexpr CanMessage power_limit;
-extern constexpr CanMessage reserved_3;
-extern constexpr CanMessage reserved_4;
-extern constexpr CanMessage CAN_map_version;
+extern const CanMessage erpm;
+extern const CanMessage duty_cycle;
+extern const CanMessage input_voltage;
+extern const CanMessage AC_current;
+extern const CanMessage DC_current;
+extern const CanMessage RESERVED_1;
+extern const CanMessage controller_temperature;
+extern const CanMessage motor_temperature;
+extern const CanMessage fault_code;
+extern const CanMessage RESERVED_2;
+extern const CanMessage Id;
+extern const CanMessage Iq;
+extern const CanMessage throttle_signal;
+extern const CanMessage brake_signal;
+extern const CanMessage digital_input_1;
+extern const CanMessage digital_input_2;
+extern const CanMessage digital_input_3;
+extern const CanMessage digital_input_4;
+extern const CanMessage digital_input_1_2;
+extern const CanMessage digital_input_2_2;
+extern const CanMessage digital_input_3_2;
+extern const CanMessage digital_input_4_2;
+extern const CanMessage drive_enable;
+extern const CanMessage capacitor_temp_limit;
+extern const CanMessage DC_current_limit;
+extern const CanMessage drive_enable_limit;
+extern const CanMessage igbt_acceleration_temperature_limit;
+extern const CanMessage igbt_temperature_limit;
+extern const CanMessage input_voltage_limit;
+extern const CanMessage motor_acceleration_temperature_limit;
+extern const CanMessage motor_temperature_limit;
+extern const CanMessage RPM_min_limit;
+extern const CanMessage RPM_max_limit;
+extern const CanMessage power_limit;
+extern const CanMessage reserved_3;
+extern const CanMessage reserved_4;
+extern const CanMessage CAN_map_version;
 
-extern constexpr CanMessage ALL_MESSAGES[]; // Array of all messages
-extern constexpr int NUM_MESSAGES;          // Number of messages in the array
+extern const CanMessage ALL_MESSAGES[]; // Array of all messages
+extern const int NUM_MESSAGES;          // Number of messages in the array
 
 #endif
