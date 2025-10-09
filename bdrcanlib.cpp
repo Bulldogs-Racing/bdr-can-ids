@@ -28,7 +28,7 @@ float BDRCANLib::conv_to_dec(const String &s)
     return tmp.toFloat();
 }
 
-constexpr int MESSAGE_SIZE = 8; // default size of the CanMessage structure
+#define int MESSAGE_SIZE 8 // default size of the CanMessage structure
 
 /*
  * Define every CAN ID used in the system.

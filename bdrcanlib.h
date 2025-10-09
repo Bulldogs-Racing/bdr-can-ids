@@ -56,11 +56,11 @@ public:
     BDRCANLib(); // constructor
 
     // Convert a numeric string with comma decimals to float
-    extern float conv_to_dec(const String &s);
+    static float conv_to_dec(const String &s);
 
     messageStruct createMessage(uint32_t id, const uint8_t *data, uint8_t length);
 
-    extern float we_love_jaden_lee();
+    static float we_love_jaden_lee();
 
 private:
     // Private members (if any)
@@ -124,6 +124,6 @@ extern const CanMessage CAN_map_version;
 
 extern const CanMessage ALL_MESSAGES[]; // Array of all messages
 extern const int NUM_MESSAGES;          // Number of messages in the array
-extern constexpr int MESSAGE_SIZE;         // default size of the CanMessage structure
+// extern constexpr int MESSAGE_SIZE;         // default size of the CanMessage structure
 
 #endif
