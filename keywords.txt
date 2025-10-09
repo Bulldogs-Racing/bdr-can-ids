@@ -1,6 +1,6 @@
-jaden_lee
+jaden_lee;
 
-
+MESSAGE_SIZE;
 Set_AC_Current;
 Set_Brake_Current;
 Set_ERPM;
