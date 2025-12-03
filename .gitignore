@@ -3,3 +3,5 @@
 vscode-management/.pio/libdeps/teensy41/FlexCAN_T4
 .vscode
 /bdrcanidlib
+
+.DS_Store
