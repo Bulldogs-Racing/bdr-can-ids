@@ -22,6 +22,26 @@ float BDRCANLib::conv_to_dec(const String& s) {
     return tmp.toFloat();
 }
 
+uint32_t BDRCANLib::getAllCANIDs() {
+    return {
+        Set_AC_Current.id,
+        Set_Brake_Current.id,
+        Set_ERPM.id,
+        Set_Position.id,
+        Set_Relative_Current.id,
+        Set_Relative_Brake_Current.id,
+        Set_Digital_Output_1.id,
+        Set_Digital_Output_2.id,
+        Set_Digital_Output_3.id,
+        Set_Digital_Output_4.id,
+        Max_AC_Current.id,
+        Set_Maximum_AC_Brake_Current.id,
+        Max_DC_Current.id,
+        Set_Maximum_DC_Brake_Current.id,
+        Drive_Enable.id
+    };
+}
+
 /*
  * Define every CAN ID used in the system.
  * Add or modify as needed for your application.
