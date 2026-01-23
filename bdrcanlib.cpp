@@ -22,8 +22,8 @@ float BDRCANLib::conv_to_dec(const String& s) {
     return tmp.toFloat();
 }
 
-uint32_t BDRCANLib::getAllCANIDs() {
-    return {
+uint32_t* BDRCANLib::getAllCANIDs() {
+    static uint32_t ids[] = {
         Set_AC_Current.id,
         Set_Brake_Current.id,
         Set_ERPM.id,
@@ -40,6 +40,7 @@ uint32_t BDRCANLib::getAllCANIDs() {
         Set_Maximum_DC_Brake_Current.id,
         Drive_Enable.id
     };
+    return ids;
 }
 
 /*

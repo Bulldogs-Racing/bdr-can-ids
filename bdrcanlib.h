@@ -59,7 +59,7 @@
         static float we_love_jaden_lee();
         static const int defmeslen = 8; // Standard CAN message size
 
-        static uint32_t getAllCANIDs();
+        static uint32_t* getAllCANIDs();
     private:
         // Private members (if any)
     };
