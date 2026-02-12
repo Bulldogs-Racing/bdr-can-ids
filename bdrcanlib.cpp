@@ -18,7 +18,7 @@ messageStruct BDRCANLib::createMessageInv(uint32_t id, const uint8_t* data, uint
 
 void BDRCANLib::sendOBD2Request(uint16_t pid)
 {
-    ACAN_T4::CANMessage frame;
+    CANMessage frame;
     frame.id = OBD2_REQUEST_ID;
     frame.ext = false;
     frame.len = 8;
