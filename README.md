@@ -12,7 +12,7 @@ People who are using Teensy/other Arduino-based systems can use this library.
 
 ## Hardware requirements 
 
-- Teensy 4.01 
+- Teensy 4.1 
 
 ### recognized hardware:
 
@@ -29,23 +29,6 @@ People who are using Teensy/other Arduino-based systems can use this library.
 3. Open Arduino IDE 
 
 4. Add library as zip (on MacOS sketch -> include library -> add .ZIP library…) 
-
-## Changelog
-
-### Version 1.1 (February 2026)
-**Bug Fixes:**
-- Fixed `sendOBD2Request()` to be a proper class member function
-- Fixed incorrect `CANMessage` type reference to `ACAN_T4::CANMessage`
-- Added missing `OBD2_REQUEST_ID` constant definition
-- Fixed `waitingForResponse` variable to be a class member
-- Fixed `getAllCANIDs()` to safely return array size through optional parameter
-- Added missing inverter feedback message definitions (erpm, duty_cycle, input_voltage, etc.)
-
-**New Features:**
-- Added `interpretInverterMessage()` function for automatic value extraction from inverter CAN messages
-- Added `interpretBMSMessage()` function for automatic value extraction from BMS CAN messages
-- Added `findMessageByID()` function to look up message definitions by CAN ID
-- Comprehensive message interpretation with proper scaling and bounds checking
 
 ## usage
 
