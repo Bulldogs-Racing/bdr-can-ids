@@ -131,12 +131,13 @@ void loop() {
         float value;
         
         // Interpret based on message type
-        if (receivedMsg.id < 0x100) {
-            // Inverter message
-            value = canLib.interpretInverterMessage(receivedMsg, *msgDef);
+        if (BDRCANLib::isInverterMessage(msgDef)) {
+            value = canLib.interpretInverterMessage(msg, *msgDef);
+        } else if (BDRCANLib::isBMSMessage(msgDef)) {
+            value = canLib.interpretBMSMessage(msg, *msgDef);
         } else {
-            // BMS message
-            value = canLib.interpretBMSMessage(receivedMsg, *msgDef);
+            // other message types
+            return;
         }
         
         Serial.print(msgDef->name);

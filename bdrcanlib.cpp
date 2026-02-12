@@ -341,6 +341,20 @@ const CanMessage* BDRCANLib::findMessageByID(uint32_t id) {
     return nullptr;
 }
 
+// Helper to determine if a message is from the inverter
+bool BDRCANLib::isInverterMessage(const CanMessage* msg) {
+    if (msg == nullptr) return false;
+    // Inverter messages are in the 0x01-0xFF range
+    return (msg->id >= 0x01 && msg->id <= 0xFF);
+}
+
+// Helper to determine if a message is from the BMS
+bool BDRCANLib::isBMSMessage(const CanMessage* msg) {
+    if (msg == nullptr) return false;
+    // BMS messages are in the 0xF000+ range
+    return (msg->id >= 0xF000);
+}
+
 /*
  * Define every CAN ID used in the system.
  * Add or modify as needed for your application.

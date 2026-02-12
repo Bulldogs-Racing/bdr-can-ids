@@ -53,6 +53,10 @@
         
         // Find message definition by ID
         static const CanMessage* findMessageByID(uint32_t id);
+        
+        // Helper to determine message type
+        static bool isInverterMessage(const CanMessage* msg);
+        static bool isBMSMessage(const CanMessage* msg);
 
         static const int defmeslen = 8; // Standard CAN message size
         static const uint32_t OBD2_REQUEST_ID = 0x7DF; // Standard OBD2 request ID
