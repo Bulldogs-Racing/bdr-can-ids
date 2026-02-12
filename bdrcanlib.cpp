@@ -4,7 +4,7 @@
 BDRCANLib::BDRCANLib() {
     // constructor body left intentionally empty — real init can go in begin()
 }
-messageStruct BDRCANLib::createMessage(uint32_t id, const uint8_t* data, uint8_t length) {
+messageStruct BDRCANLib::createMessageInv(uint32_t id, const uint8_t* data, uint8_t length) {
     messageStruct m;
     m.id = id;
     m.length = length;
@@ -15,6 +15,38 @@ messageStruct BDRCANLib::createMessage(uint32_t id, const uint8_t* data, uint8_t
     }
     return m;
 }
+
+void sendOBD2Request(uint16_t pid)
+{
+    CANMessage frame;
+    frame.id = OBD2_REQUEST_ID;
+    frame.ext = false;
+    frame.len = 8;
+
+    // OBD2 Mode 0x22 request format:
+    // Byte 0: Number of additional bytes (0x03)
+    // Byte 1: Mode (0x22 = Read Data by ID)
+    // Byte 2-3: PID (2 bytes, MSB first)
+    // Bytes 4-7: Padding (0x00)
+
+    frame.data[0] = 0x03;              // 3 additional bytes
+    frame.data[1] = 0x22;              // Mode 22
+    frame.data[2] = (pid >> 8) & 0xFF; // PID high byte
+    frame.data[3] = pid & 0xFF;        // PID low byte
+    frame.data[4] = 0x00;
+    frame.data[5] = 0x00;
+    frame.data[6] = 0x00;
+    frame.data[7] = 0x00;
+
+    const bool ok = ACAN_T4::can2.tryToSend(frame);
+    if (!ok)
+    {
+        Serial.println("Failed to send OBD2 request");
+    }
+
+    waitingForResponse = true;
+}
+
 
 float BDRCANLib::conv_to_dec(const String& s) {
     String tmp = s;
@@ -1524,9 +1556,3 @@ const CanMessage internal_resistances_169_180 = {
     "mOhms",
     "NOTE: Bit 16 (the MSB) indicates whether the cell is actively balancing (1 = balancing, 0 = not balancing)."
 };
-
-
-float BDRCANLib::we_love_jaden_lee() {
-    Serial.println("We love Jaden Lee!");
-    return 42.0f; // The answer to life, the universe, and everything
-}

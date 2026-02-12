@@ -32,22 +32,64 @@ People who are using Teensy/other Arduino-based systems can use this library.
 
 ## usage
 
-each id is given a CanMessage construct. it looks like this:
+### structs
+each id is given a CanMessage construct, to store the kind of message each id is. it looks like this:
 ```cpp
     struct CanMessage {
-        const char* name;       // main name
-        uint32_t id;            // CAN ID
-        const char* alt;        // alternative name
-        const char* byte;       // byte
-        int bit_start;
-        int length;
-        float min;
-        float max;
-        float scale;
-        const char* units;
-        const char* description;
+        const char* name;           // main name
+        uint32_t id;                // CAN ID
+        const char* alt;            // alternative name
+        const char* byte;           // byte
+        int bit_start;              // start bit
+        int length;                 // length
+        float min;                  // minimum value
+        float max;                  // maximum value
+        float scale;                // value multiplier
+        const char* units;          // display units
+        const char* description;    // a long string description
     };
 ```
+here additionally is the message struct. it contains a can message
+```cpp
+struct messageStruct {
+        uint32_t id;
+        uint8_t data[8];
+        uint8_t length;
+    };
+```
+### functions
+
+there are several basic functions this library has:
+
+#### important functions 
+**createMessageInv**
+```cpp
+messageStruct createMessageInv(uint32_t id, const uint8_t* data, uint8_t length);
+```
+creates an inverter message.
+
+**sendOBD2Request**
+```cpp
+void sendOBD2Request(uint16_t pid);
+```
+sends an OBD2 request. the orion2 bms uses a specific type of can, and waits for a message request before sending any kind of can message, unless manually configured otherwise
+
+#### other functions
+
+**getAllCANIDs** 
+```cpp 
+static uint32_t* getAllCANIDs();
+```
+gets an array of every id (for display purposes)
+
+**conv_to_dec** 
+```cpp 
+static float conv_to_dec(const String& s);
+```
+converts a string number with decimals separated by commas into floats separated by periods, ie "1,32" -> 1.32
+In the motor inverter documentation, it is common to find these kinds of numbers.
+
+
 ### ids:
 here is a list of recognised id messages that this library can use:
 

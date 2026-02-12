@@ -27,18 +27,20 @@
     #ifndef bdrcanlib_h
     #define bdrcanlib_h
     #include "Arduino.h"
+    #include <ACAN_T4.h> // required
+
     struct CanMessage {
-        const char* name;      // main name
-        uint32_t id;           // CAN ID
-        const char* alt;       // alternative name
-        const char* byte;
-        int bit_start;
-        int length;
-        float min;
-        float max;
-        float scale;
-        const char* units;
-        const char* description;
+        const char* name;           // main name
+        uint32_t id;                // CAN ID
+        const char* alt;            // alternative name
+        const char* byte;           // byte
+        int bit_start;              // start bit
+        int length;                 // length
+        float min;                  // minimum value
+        float max;                  // maximum value
+        float scale;                // value multiplier
+        const char* units;          // display units
+        const char* description;    // a long string description
     };
 
     struct messageStruct {
@@ -54,9 +56,8 @@
         // Convert a numeric string with comma decimals to float
         static float conv_to_dec(const String& s);
 
-        messageStruct createMessage(uint32_t id, const uint8_t* data, uint8_t length);
+        messageStruct createMessageInv(uint32_t id, const uint8_t* data, uint8_t length);
 
-        static float we_love_jaden_lee();
         static const int defmeslen = 8; // Standard CAN message size
 
         static uint32_t* getAllCANIDs();
