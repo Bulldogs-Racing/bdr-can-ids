@@ -121,6 +121,98 @@ extern const CanMessage reserved_3;
 extern const CanMessage reserved_4;
 extern const CanMessage CAN_map_version;
 
+// Orion BMS CAN messages
+extern const CanMessage relays_status;
+extern const CanMessage max_cells_supported_count;
+extern const CanMessage populated_cell_count;
+extern const CanMessage pack_charge_current_limit;
+extern const CanMessage pack_discharge_current_limit;
+extern const CanMessage signed_pack_current;
+extern const CanMessage unsigned_pack_current;
+extern const CanMessage pack_voltage;
+extern const CanMessage pack_open_voltage;
+extern const CanMessage pack_state_of_charge;
+extern const CanMessage pack_amphours;
+extern const CanMessage pack_resistance;
+extern const CanMessage pack_depth_of_discharge;
+extern const CanMessage pack_health;
+extern const CanMessage pack_summed_voltage;
+extern const CanMessage total_pack_cycles;
+extern const CanMessage highest_pack_temperature;
+extern const CanMessage lowest_pack_temperature;
+extern const CanMessage avg_pack_temperature;
+extern const CanMessage heatsink_temperature_sensor;
+extern const CanMessage fan_speed;
+extern const CanMessage requested_fan_speed;
+extern const CanMessage low_cell_voltage;
+extern const CanMessage low_cell_voltage_id;
+extern const CanMessage high_cell_voltage;
+extern const CanMessage high_cell_voltage_id;
+extern const CanMessage avg_cell_voltage;
+extern const CanMessage low_opencell_voltage;
+extern const CanMessage low_opencell_voltage_id;
+extern const CanMessage high_opencell_voltage;
+extern const CanMessage high_opencell_voltage_id;
+extern const CanMessage avg_opencell_voltage;
+extern const CanMessage low_cell_resistance;
+extern const CanMessage low_cell_resistance_id;
+extern const CanMessage high_cell_resistance;
+extern const CanMessage high_cell_resistance_id;
+extern const CanMessage avg_cell_resistance;
+extern const CanMessage input_power_supply_voltage;
+extern const CanMessage fan_voltage;
+
+// Cell voltage arrays (15 messages for cells 1-180)
+extern const CanMessage cell_voltages_1_12;
+extern const CanMessage cell_voltages_13_24;
+extern const CanMessage cell_voltages_25_36;
+extern const CanMessage cell_voltages_37_48;
+extern const CanMessage cell_voltages_49_60;
+extern const CanMessage cell_voltages_61_72;
+extern const CanMessage cell_voltages_73_84;
+extern const CanMessage cell_voltages_85_96;
+extern const CanMessage cell_voltages_97_108;
+extern const CanMessage cell_voltages_109_120;
+extern const CanMessage cell_voltages_121_132;
+extern const CanMessage cell_voltages_133_144;
+extern const CanMessage cell_voltages_145_156;
+extern const CanMessage cell_voltages_157_168;
+extern const CanMessage cell_voltages_169_180;
+
+// Opencell voltage arrays (15 messages for cells 1-180)
+extern const CanMessage opencell_voltages_1_12;
+extern const CanMessage opencell_voltages_13_24;
+extern const CanMessage opencell_voltages_25_36;
+extern const CanMessage opencell_voltages_37_48;
+extern const CanMessage opencell_voltages_49_60;
+extern const CanMessage opencell_voltages_61_72;
+extern const CanMessage opencell_voltages_73_84;
+extern const CanMessage opencell_voltages_85_96;
+extern const CanMessage opencell_voltages_97_108;
+extern const CanMessage opencell_voltages_109_120;
+extern const CanMessage opencell_voltages_121_132;
+extern const CanMessage opencell_voltages_133_144;
+extern const CanMessage opencell_voltages_145_156;
+extern const CanMessage opencell_voltages_157_168;
+extern const CanMessage opencell_voltages_169_180;
+
+// Internal resistance arrays (15 messages for cells 1-180)
+extern const CanMessage internal_resistances_1_12;
+extern const CanMessage internal_resistances_13_24;
+extern const CanMessage internal_resistances_25_36;
+extern const CanMessage internal_resistances_37_48;
+extern const CanMessage internal_resistances_49_60;
+extern const CanMessage internal_resistances_61_72;
+extern const CanMessage internal_resistances_73_84;
+extern const CanMessage internal_resistances_85_96;
+extern const CanMessage internal_resistances_97_108;
+extern const CanMessage internal_resistances_109_120;
+extern const CanMessage internal_resistances_121_132;
+extern const CanMessage internal_resistances_133_144;
+extern const CanMessage internal_resistances_145_156;
+extern const CanMessage internal_resistances_157_168;
+extern const CanMessage internal_resistances_169_180;
+
     
 
 #endif
