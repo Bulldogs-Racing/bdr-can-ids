@@ -1,25 +1,7 @@
 /*
     bdrcan.h - Library for bulldog racing CAN id protocol, as defined by 
     https://www.drivetraininnovation.com/file-share/62d657cb-4878-478e-a06c-e22040fd226f (can manual v2.4)
-    Created by Jaden Lee, Sept 29th 2025, Yale class of 2029.
-    Use with credit.
-
-    Copyright 2025 Jaden Lee
-
-    Permission is hereby granted, free of charge, 
-    to any person obtaining a copy of this software and associated documentation files (the “Software”), 
-    to deal in the Software without restriction, including without limitation the rights to use, copy, modify, 
-    merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the 
-    Software is furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be 
-    included in all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-    INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE 
-    AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
-    DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    
     */
 
     // Top-level CanMessage so .cpp can define globals easily
@@ -56,13 +38,27 @@
         // Convert a numeric string with comma decimals to float
         static float conv_to_dec(const String& s);
 
+        // Create message structs
         messageStruct createMessageInv(uint32_t id, const uint8_t* data, uint8_t length);
 
-        static const int defmeslen = 8; // Standard CAN message size
+        // Send OBD2 request for BMS
+        void sendOBD2Request(uint16_t pid);
 
-        static uint32_t* getAllCANIDs();
+        // Get all CAN IDs
+        static uint32_t* getAllCANIDs(int* count = nullptr);
+
+        // Interpret messages - extract and scale values from raw CAN data
+        float interpretInverterMessage(const messageStruct& msg, const CanMessage& definition);
+        float interpretBMSMessage(const messageStruct& msg, const CanMessage& definition);
+        
+        // Find message definition by ID
+        static const CanMessage* findMessageByID(uint32_t id);
+
+        static const int defmeslen = 8; // Standard CAN message size
+        static const uint32_t OBD2_REQUEST_ID = 0x7DF; // Standard OBD2 request ID
+        
     private:
-        // Private members (if any)
+        bool waitingForResponse = false;
     };
     
 

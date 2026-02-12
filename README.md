@@ -30,6 +30,23 @@ People who are using Teensy/other Arduino-based systems can use this library.
 
 4. Add library as zip (on MacOS sketch -> include library -> add .ZIP library…) 
 
+## Changelog
+
+### Version 1.1 (February 2026)
+**Bug Fixes:**
+- Fixed `sendOBD2Request()` to be a proper class member function
+- Fixed incorrect `CANMessage` type reference to `ACAN_T4::CANMessage`
+- Added missing `OBD2_REQUEST_ID` constant definition
+- Fixed `waitingForResponse` variable to be a class member
+- Fixed `getAllCANIDs()` to safely return array size through optional parameter
+- Added missing inverter feedback message definitions (erpm, duty_cycle, input_voltage, etc.)
+
+**New Features:**
+- Added `interpretInverterMessage()` function for automatic value extraction from inverter CAN messages
+- Added `interpretBMSMessage()` function for automatic value extraction from BMS CAN messages
+- Added `findMessageByID()` function to look up message definitions by CAN ID
+- Comprehensive message interpretation with proper scaling and bounds checking
+
 ## usage
 
 ### structs
@@ -74,13 +91,31 @@ void sendOBD2Request(uint16_t pid);
 ```
 sends an OBD2 request. the orion2 bms uses a specific type of can, and waits for a message request before sending any kind of can message, unless manually configured otherwise
 
+**interpretInverterMessage**
+```cpp
+float interpretInverterMessage(const messageStruct& msg, const CanMessage& definition);
+```
+Interprets a raw CAN message from the motor inverter and extracts the scaled value according to the message definition. Returns the interpreted value as a float.
+
+**interpretBMSMessage**
+```cpp
+float interpretBMSMessage(const messageStruct& msg, const CanMessage& definition);
+```
+Interprets a raw CAN message from the Orion BMS and extracts the scaled value according to the message definition. Uses big-endian byte ordering typical of BMS systems. Returns the interpreted value as a float.
+
+**findMessageByID**
+```cpp
+static const CanMessage* findMessageByID(uint32_t id);
+```
+Finds and returns a pointer to the CanMessage definition for a given CAN ID. Returns nullptr if the ID is not recognized. Useful for automatic message interpretation.
+
 #### other functions
 
 **getAllCANIDs** 
 ```cpp 
-static uint32_t* getAllCANIDs();
+static uint32_t* getAllCANIDs(int* count = nullptr);
 ```
-gets an array of every id (for display purposes)
+gets an array of every id (for display purposes). Optionally returns the count of IDs through the count pointer parameter.
 
 **conv_to_dec** 
 ```cpp 
@@ -89,11 +124,53 @@ static float conv_to_dec(const String& s);
 converts a string number with decimals separated by commas into floats separated by periods, ie "1,32" -> 1.32
 In the motor inverter documentation, it is common to find these kinds of numbers.
 
+#### usage example
+
+```cpp
+#include <bdrcanlib.h>
+
+BDRCANLib canLib;
+
+void setup() {
+    Serial.begin(115200);
+    // Initialize CAN bus here
+}
+
+void loop() {
+    // Receive a CAN message (example)
+    messageStruct receivedMsg;
+    // ... (populate receivedMsg from CAN bus)
+    
+    // Find the message definition
+    const CanMessage* msgDef = BDRCANLib::findMessageByID(receivedMsg.id);
+    
+    if (msgDef != nullptr) {
+        float value;
+        
+        // Interpret based on message type
+        if (receivedMsg.id < 0x100) {
+            // Inverter message
+            value = canLib.interpretInverterMessage(receivedMsg, *msgDef);
+        } else {
+            // BMS message
+            value = canLib.interpretBMSMessage(receivedMsg, *msgDef);
+        }
+        
+        Serial.print(msgDef->name);
+        Serial.print(": ");
+        Serial.print(value);
+        Serial.print(" ");
+        Serial.println(msgDef->units);
+    }
+}
+```
 
 ### ids:
 here is a list of recognised id messages that this library can use:
 
 #### dti motor inverter: 
+
+**Command Messages:**
 - Set_AC_Current
 - Set_Brake_Current
 - Set_ERPM
@@ -109,6 +186,45 @@ here is a list of recognised id messages that this library can use:
 - Max_DC_Current
 - Set_Maximum_DC_Brake_Current
 - Drive_Enable
+
+**Feedback/Status Messages:**
+- erpm
+- duty_cycle
+- input_voltage
+- AC_current
+- DC_current
+- RESERVED_1
+- controller_temperature
+- motor_temperature
+- fault_code
+- RESERVED_2
+- Id
+- Iq
+- throttle_signal
+- brake_signal
+- digital_input_1
+- digital_input_2
+- digital_input_3
+- digital_input_4
+- digital_input_1_2
+- digital_input_2_2
+- digital_input_3_2
+- digital_input_4_2
+- drive_enable
+- capacitor_temp_limit
+- DC_current_limit
+- drive_enable_limit
+- igbt_acceleration_temperature_limit
+- igbt_temperature_limit
+- input_voltage_limit
+- motor_acceleration_temperature_limit
+- motor_temperature_limit
+- RPM_min_limit
+- RPM_max_limit
+- power_limit
+- reserved_3
+- reserved_4
+- CAN_map_version
 
 #### orion2 bms
 
@@ -208,28 +324,6 @@ here is a list of recognised id messages that this library can use:
 ## Source 
 
 DTI motor inverter can manual 
+orion2 BMS can PID sheet and documentation
 
 All the IDs and other related information were taken from this manual, compiled in a spreadsheet, exported as CSV, then auto-formatted (through a Python script of my own design) into a library. 
-
----
-
-**License**
-
-MIT License
-
-Copyright 2025 Jaden Lee
-
-    Permission is hereby granted, free of charge, 
-    to any person obtaining a copy of this software and associated documentation files (the “Software”), 
-    to deal in the Software without restriction, including without limitation the rights to use, copy, modify, 
-    merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the 
-    Software is furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be 
-    included in all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-    INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE 
-    AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
-    DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

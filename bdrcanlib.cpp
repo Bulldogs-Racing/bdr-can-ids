@@ -16,9 +16,9 @@ messageStruct BDRCANLib::createMessageInv(uint32_t id, const uint8_t* data, uint
     return m;
 }
 
-void sendOBD2Request(uint16_t pid)
+void BDRCANLib::sendOBD2Request(uint16_t pid)
 {
-    CANMessage frame;
+    ACAN_T4::CANMessage frame;
     frame.id = OBD2_REQUEST_ID;
     frame.ext = false;
     frame.len = 8;
@@ -54,7 +54,7 @@ float BDRCANLib::conv_to_dec(const String& s) {
     return tmp.toFloat();
 }
 
-uint32_t* BDRCANLib::getAllCANIDs() {
+uint32_t* BDRCANLib::getAllCANIDs(int* count) {
     static uint32_t ids[] = {
         Set_AC_Current.id,
         Set_Brake_Current.id,
@@ -160,7 +160,185 @@ uint32_t* BDRCANLib::getAllCANIDs() {
         internal_resistances_157_168.id,
         internal_resistances_169_180.id
     };
+    
+    if (count != nullptr) {
+        *count = sizeof(ids) / sizeof(ids[0]);
+    }
+    
     return ids;
+}
+
+// Interpret inverter message - extract value from raw CAN data
+float BDRCANLib::interpretInverterMessage(const messageStruct& msg, const CanMessage& definition) {
+    // Verify the message ID matches
+    if (msg.id != definition.id) {
+        Serial.println("Error: Message ID mismatch!");
+        return 0.0f;
+    }
+    
+    // Extract the raw value based on bit_start and length
+    int byteIndex = definition.bit_start / 8;
+    int bitOffset = definition.bit_start % 8;
+    int lengthBits = definition.length;
+    
+    // Check bounds
+    if (byteIndex >= msg.length || (byteIndex + (lengthBits + bitOffset + 7) / 8) > msg.length) {
+        Serial.println("Error: Message data out of bounds!");
+        return 0.0f;
+    }
+    
+    // Extract value (little-endian)
+    int32_t rawValue = 0;
+    int bytesNeeded = (lengthBits + bitOffset + 7) / 8;
+    
+    for (int i = 0; i < bytesNeeded && (byteIndex + i) < 8; i++) {
+        rawValue |= (uint32_t)msg.data[byteIndex + i] << (i * 8);
+    }
+    
+    // Shift to align
+    rawValue >>= bitOffset;
+    
+    // Mask to length
+    if (lengthBits < 32) {
+        uint32_t mask = (1UL << lengthBits) - 1;
+        rawValue &= mask;
+        
+        // Handle signed values (check if sign bit is set)
+        if (lengthBits > 1 && (rawValue & (1UL << (lengthBits - 1)))) {
+            // Sign extend
+            rawValue |= ~mask;
+        }
+    }
+    
+    // Apply scaling
+    float scaledValue = (float)rawValue / definition.scale;
+    
+    // Clamp to min/max
+    if (scaledValue < definition.min) scaledValue = definition.min;
+    if (scaledValue > definition.max) scaledValue = definition.max;
+    
+    return scaledValue;
+}
+
+// Interpret BMS message - extract value from raw CAN data
+float BDRCANLib::interpretBMSMessage(const messageStruct& msg, const CanMessage& definition) {
+    // Verify the message ID matches
+    if (msg.id != definition.id) {
+        Serial.println("Error: Message ID mismatch!");
+        return 0.0f;
+    }
+    
+    // For BMS messages, the interpretation is similar but may have different byte ordering
+    // BMS typically uses big-endian (MSB first)
+    int byteIndex = definition.bit_start / 8;
+    int lengthBytes = definition.length / 8;
+    
+    // Check bounds
+    if (byteIndex >= msg.length || (byteIndex + lengthBytes) > msg.length) {
+        Serial.println("Error: Message data out of bounds!");
+        return 0.0f;
+    }
+    
+    // Extract value (big-endian for BMS)
+    int32_t rawValue = 0;
+    
+    for (int i = 0; i < lengthBytes && (byteIndex + i) < 8; i++) {
+        rawValue = (rawValue << 8) | msg.data[byteIndex + i];
+    }
+    
+    // Handle signed values (for 16-bit signed)
+    if (lengthBytes == 2 && (rawValue & 0x8000)) {
+        rawValue |= 0xFFFF0000; // Sign extend
+    } else if (lengthBytes == 4 && (rawValue & 0x80000000)) {
+        // Already 32-bit, no extension needed
+    }
+    
+    // Apply scaling
+    float scaledValue = (float)rawValue * definition.scale;
+    
+    // Clamp to min/max
+    if (scaledValue < definition.min) scaledValue = definition.min;
+    if (scaledValue > definition.max) scaledValue = definition.max;
+    
+    return scaledValue;
+}
+
+// Find message definition by CAN ID
+const CanMessage* BDRCANLib::findMessageByID(uint32_t id) {
+    // Check inverter messages (0x01 - 0x0F range)
+    if (id == Set_AC_Current.id) return &Set_AC_Current;
+    if (id == Set_Brake_Current.id) return &Set_Brake_Current;
+    if (id == Set_ERPM.id) return &Set_ERPM;
+    if (id == Set_Position.id) return &Set_Position;
+    if (id == Set_Relative_Current.id) return &Set_Relative_Current;
+    if (id == Set_Relative_Brake_Current.id) return &Set_Relative_Brake_Current;
+    if (id == Set_Digital_Output_1.id) return &Set_Digital_Output_1;
+    if (id == Max_AC_Current.id) return &Max_AC_Current;
+    if (id == Set_Maximum_AC_Brake_Current.id) return &Set_Maximum_AC_Brake_Current;
+    if (id == Max_DC_Current.id) return &Max_DC_Current;
+    if (id == Set_Maximum_DC_Brake_Current.id) return &Set_Maximum_DC_Brake_Current;
+    if (id == Drive_Enable.id) return &Drive_Enable;
+    
+    // Check BMS messages (0xF000+ range)
+    if (id == relays_status.id) return &relays_status;
+    if (id == max_cells_supported_count.id) return &max_cells_supported_count;
+    if (id == populated_cell_count.id) return &populated_cell_count;
+    if (id == pack_charge_current_limit.id) return &pack_charge_current_limit;
+    if (id == pack_discharge_current_limit.id) return &pack_discharge_current_limit;
+    if (id == signed_pack_current.id) return &signed_pack_current;
+    if (id == unsigned_pack_current.id) return &unsigned_pack_current;
+    if (id == pack_voltage.id) return &pack_voltage;
+    if (id == pack_open_voltage.id) return &pack_open_voltage;
+    if (id == pack_state_of_charge.id) return &pack_state_of_charge;
+    if (id == pack_amphours.id) return &pack_amphours;
+    if (id == pack_resistance.id) return &pack_resistance;
+    if (id == pack_depth_of_discharge.id) return &pack_depth_of_discharge;
+    if (id == pack_health.id) return &pack_health;
+    if (id == pack_summed_voltage.id) return &pack_summed_voltage;
+    if (id == total_pack_cycles.id) return &total_pack_cycles;
+    if (id == highest_pack_temperature.id) return &highest_pack_temperature;
+    if (id == lowest_pack_temperature.id) return &lowest_pack_temperature;
+    if (id == avg_pack_temperature.id) return &avg_pack_temperature;
+    if (id == heatsink_temperature_sensor.id) return &heatsink_temperature_sensor;
+    if (id == fan_speed.id) return &fan_speed;
+    if (id == requested_fan_speed.id) return &requested_fan_speed;
+    if (id == low_cell_voltage.id) return &low_cell_voltage;
+    if (id == low_cell_voltage_id.id) return &low_cell_voltage_id;
+    if (id == high_cell_voltage.id) return &high_cell_voltage;
+    if (id == high_cell_voltage_id.id) return &high_cell_voltage_id;
+    if (id == avg_cell_voltage.id) return &avg_cell_voltage;
+    if (id == low_opencell_voltage.id) return &low_opencell_voltage;
+    if (id == low_opencell_voltage_id.id) return &low_opencell_voltage_id;
+    if (id == high_opencell_voltage.id) return &high_opencell_voltage;
+    if (id == high_opencell_voltage_id.id) return &high_opencell_voltage_id;
+    if (id == avg_opencell_voltage.id) return &avg_opencell_voltage;
+    if (id == low_cell_resistance.id) return &low_cell_resistance;
+    if (id == low_cell_resistance_id.id) return &low_cell_resistance_id;
+    if (id == high_cell_resistance.id) return &high_cell_resistance;
+    if (id == high_cell_resistance_id.id) return &high_cell_resistance_id;
+    if (id == avg_cell_resistance.id) return &avg_cell_resistance;
+    if (id == input_power_supply_voltage.id) return &input_power_supply_voltage;
+    if (id == fan_voltage.id) return &fan_voltage;
+    
+    // Cell voltage arrays
+    if (id == cell_voltages_1_12.id) return &cell_voltages_1_12;
+    if (id == cell_voltages_13_24.id) return &cell_voltages_13_24;
+    if (id == cell_voltages_25_36.id) return &cell_voltages_25_36;
+    if (id == cell_voltages_37_48.id) return &cell_voltages_37_48;
+    if (id == cell_voltages_49_60.id) return &cell_voltages_49_60;
+    if (id == cell_voltages_61_72.id) return &cell_voltages_61_72;
+    if (id == cell_voltages_73_84.id) return &cell_voltages_73_84;
+    if (id == cell_voltages_85_96.id) return &cell_voltages_85_96;
+    if (id == cell_voltages_97_108.id) return &cell_voltages_97_108;
+    if (id == cell_voltages_109_120.id) return &cell_voltages_109_120;
+    if (id == cell_voltages_121_132.id) return &cell_voltages_121_132;
+    if (id == cell_voltages_133_144.id) return &cell_voltages_133_144;
+    if (id == cell_voltages_145_156.id) return &cell_voltages_145_156;
+    if (id == cell_voltages_157_168.id) return &cell_voltages_157_168;
+    if (id == cell_voltages_169_180.id) return &cell_voltages_169_180;
+    
+    // Not found
+    return nullptr;
 }
 
 /*
@@ -375,6 +553,525 @@ const CanMessage Drive_Enable = {
     1,
     "#",
     "0: Drive not allowed 1: Drive allowed Only 0 and 1 values are accepted. Must be sent periodically to be enabled. Refer to chapter 4.3"
+};
+
+// Inverter Feedback Messages (Status/Telemetry from motor controller)
+const CanMessage erpm = {
+    "ERPM",
+    0x20,
+    "Motor speed",
+    "0-3",
+    0,
+    32,
+    -2147483648.0f,
+    2147483647.0f,
+    1.0f,
+    "ERPM",
+    "Current electrical RPM of the motor"
+};
+
+const CanMessage duty_cycle = {
+    "Duty Cycle",
+    0x21,
+    "PWM duty",
+    "0-1",
+    0,
+    16,
+    0.0f,
+    100.0f,
+    0.1f,
+    "%",
+    "Current duty cycle percentage"
+};
+
+const CanMessage input_voltage = {
+    "Input Voltage",
+    0x22,
+    "DC bus voltage",
+    "0-1",
+    0,
+    16,
+    0.0f,
+    655.35f,
+    0.01f,
+    "V",
+    "DC bus input voltage"
+};
+
+const CanMessage AC_current = {
+    "AC Current",
+    0x23,
+    "Motor current",
+    "0-1",
+    0,
+    16,
+    -3276.8f,
+    3276.7f,
+    0.1f,
+    "A_pk",
+    "Current AC motor current"
+};
+
+const CanMessage DC_current = {
+    "DC Current",
+    0x24,
+    "Battery current",
+    "0-1",
+    0,
+    16,
+    -3276.8f,
+    3276.7f,
+    0.1f,
+    "A",
+    "Current DC battery current"
+};
+
+const CanMessage RESERVED_1 = {
+    "Reserved 1",
+    0x25,
+    "",
+    "0",
+    0,
+    8,
+    0.0f,
+    0.0f,
+    1.0f,
+    "",
+    "Reserved for future use"
+};
+
+const CanMessage controller_temperature = {
+    "Controller Temperature",
+    0x26,
+    "Inverter temp",
+    "0-1",
+    0,
+    16,
+    -40.0f,
+    215.0f,
+    0.1f,
+    "°C",
+    "Temperature of the motor controller"
+};
+
+const CanMessage motor_temperature = {
+    "Motor Temperature",
+    0x27,
+    "Motor temp",
+    "0-1",
+    0,
+    16,
+    -40.0f,
+    215.0f,
+    0.1f,
+    "°C",
+    "Temperature of the motor"
+};
+
+const CanMessage fault_code = {
+    "Fault Code",
+    0x28,
+    "Error code",
+    "0-1",
+    0,
+    16,
+    0.0f,
+    65535.0f,
+    1.0f,
+    "",
+    "Current fault/error code"
+};
+
+const CanMessage RESERVED_2 = {
+    "Reserved 2",
+    0x29,
+    "",
+    "0",
+    0,
+    8,
+    0.0f,
+    0.0f,
+    1.0f,
+    "",
+    "Reserved for future use"
+};
+
+const CanMessage Id = {
+    "Id Current",
+    0x2A,
+    "D-axis current",
+    "0-1",
+    0,
+    16,
+    -3276.8f,
+    3276.7f,
+    0.1f,
+    "A",
+    "D-axis current component"
+};
+
+const CanMessage Iq = {
+    "Iq Current",
+    0x2B,
+    "Q-axis current",
+    "0-1",
+    0,
+    16,
+    -3276.8f,
+    3276.7f,
+    0.1f,
+    "A",
+    "Q-axis current component"
+};
+
+const CanMessage throttle_signal = {
+    "Throttle Signal",
+    0x2C,
+    "Throttle input",
+    "0-1",
+    0,
+    16,
+    0.0f,
+    100.0f,
+    0.1f,
+    "%",
+    "Throttle input signal percentage"
+};
+
+const CanMessage brake_signal = {
+    "Brake Signal",
+    0x2D,
+    "Brake input",
+    "0-1",
+    0,
+    16,
+    0.0f,
+    100.0f,
+    0.1f,
+    "%",
+    "Brake input signal percentage"
+};
+
+const CanMessage digital_input_1 = {
+    "Digital Input 1",
+    0x2E,
+    "DI1",
+    "0",
+    0,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "State of digital input 1"
+};
+
+const CanMessage digital_input_2 = {
+    "Digital Input 2",
+    0x2E,
+    "DI2",
+    "0",
+    1,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "State of digital input 2"
+};
+
+const CanMessage digital_input_3 = {
+    "Digital Input 3",
+    0x2E,
+    "DI3",
+    "0",
+    2,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "State of digital input 3"
+};
+
+const CanMessage digital_input_4 = {
+    "Digital Input 4",
+    0x2E,
+    "DI4",
+    "0",
+    3,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "State of digital input 4"
+};
+
+const CanMessage digital_input_1_2 = {
+    "Digital Input 1 (Alt)",
+    0x2F,
+    "DI1_alt",
+    "0",
+    0,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Alternate state of digital input 1"
+};
+
+const CanMessage digital_input_2_2 = {
+    "Digital Input 2 (Alt)",
+    0x2F,
+    "DI2_alt",
+    "0",
+    1,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Alternate state of digital input 2"
+};
+
+const CanMessage digital_input_3_2 = {
+    "Digital Input 3 (Alt)",
+    0x2F,
+    "DI3_alt",
+    "0",
+    2,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Alternate state of digital input 3"
+};
+
+const CanMessage digital_input_4_2 = {
+    "Digital Input 4 (Alt)",
+    0x2F,
+    "DI4_alt",
+    "0",
+    3,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Alternate state of digital input 4"
+};
+
+const CanMessage drive_enable = {
+    "Drive Enable Status",
+    0x30,
+    "Drive status",
+    "0",
+    0,
+    8,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Current drive enable status"
+};
+
+const CanMessage capacitor_temp_limit = {
+    "Capacitor Temp Limit",
+    0x31,
+    "Cap temp limit active",
+    "0",
+    0,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Capacitor temperature limit active flag"
+};
+
+const CanMessage DC_current_limit = {
+    "DC Current Limit",
+    0x31,
+    "DC limit active",
+    "0",
+    1,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "DC current limit active flag"
+};
+
+const CanMessage drive_enable_limit = {
+    "Drive Enable Limit",
+    0x31,
+    "Drive enable limit",
+    "0",
+    2,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Drive enable limit active flag"
+};
+
+const CanMessage igbt_acceleration_temperature_limit = {
+    "IGBT Accel Temp Limit",
+    0x31,
+    "IGBT accel limit",
+    "0",
+    3,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "IGBT acceleration temperature limit active flag"
+};
+
+const CanMessage igbt_temperature_limit = {
+    "IGBT Temperature Limit",
+    0x31,
+    "IGBT temp limit",
+    "0",
+    4,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "IGBT temperature limit active flag"
+};
+
+const CanMessage input_voltage_limit = {
+    "Input Voltage Limit",
+    0x31,
+    "Voltage limit",
+    "0",
+    5,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Input voltage limit active flag"
+};
+
+const CanMessage motor_acceleration_temperature_limit = {
+    "Motor Accel Temp Limit",
+    0x31,
+    "Motor accel limit",
+    "0",
+    6,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Motor acceleration temperature limit active flag"
+};
+
+const CanMessage motor_temperature_limit = {
+    "Motor Temperature Limit",
+    0x31,
+    "Motor temp limit",
+    "0",
+    7,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Motor temperature limit active flag"
+};
+
+const CanMessage RPM_min_limit = {
+    "RPM Min Limit",
+    0x32,
+    "Min RPM limit",
+    "0",
+    0,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Minimum RPM limit active flag"
+};
+
+const CanMessage RPM_max_limit = {
+    "RPM Max Limit",
+    0x32,
+    "Max RPM limit",
+    "0",
+    1,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Maximum RPM limit active flag"
+};
+
+const CanMessage power_limit = {
+    "Power Limit",
+    0x32,
+    "Power limit active",
+    "0",
+    2,
+    1,
+    0.0f,
+    1.0f,
+    1.0f,
+    "",
+    "Power limit active flag"
+};
+
+const CanMessage reserved_3 = {
+    "Reserved 3",
+    0x33,
+    "",
+    "0",
+    0,
+    8,
+    0.0f,
+    0.0f,
+    1.0f,
+    "",
+    "Reserved for future use"
+};
+
+const CanMessage reserved_4 = {
+    "Reserved 4",
+    0x34,
+    "",
+    "0",
+    0,
+    8,
+    0.0f,
+    0.0f,
+    1.0f,
+    "",
+    "Reserved for future use"
+};
+
+const CanMessage CAN_map_version = {
+    "CAN Map Version",
+    0x35,
+    "Protocol version",
+    "0-1",
+    0,
+    16,
+    0.0f,
+    65535.0f,
+    1.0f,
+    "",
+    "CAN communication protocol version"
 };
 
 // Orion BMS CAN messages
