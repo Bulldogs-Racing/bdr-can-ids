@@ -12,7 +12,7 @@ People who are using Teensy/other Arduino-based systems can use this library.
 
 ## Hardware requirements 
 
-- Teensy 4.1 
+- Teensy 4.01 
 
 ### recognized hardware:
 
@@ -92,6 +92,18 @@ static const CanMessage* findMessageByID(uint32_t id);
 ```
 Finds and returns a pointer to the CanMessage definition for a given CAN ID. Returns nullptr if the ID is not recognized. Useful for automatic message interpretation.
 
+**isInverterMessage**
+```cpp
+static bool isInverterMessage(const CanMessage* msg);
+```
+Helper function that returns true if the message definition is from the motor inverter (ID range 0x01-0xFF).
+
+**isBMSMessage**
+```cpp
+static bool isBMSMessage(const CanMessage* msg);
+```
+Helper function that returns true if the message definition is from the BMS (ID range 0xF000+).
+
 #### other functions
 
 **getAllCANIDs** 
@@ -130,13 +142,13 @@ void loop() {
     if (msgDef != nullptr) {
         float value;
         
-        // Interpret based on message type
+        // Interpret based on message type using helper functions
         if (BDRCANLib::isInverterMessage(msgDef)) {
-            value = canLib.interpretInverterMessage(msg, *msgDef);
+            value = canLib.interpretInverterMessage(receivedMsg, *msgDef);
         } else if (BDRCANLib::isBMSMessage(msgDef)) {
-            value = canLib.interpretBMSMessage(msg, *msgDef);
+            value = canLib.interpretBMSMessage(receivedMsg, *msgDef);
         } else {
-            // other message types
+            // other message type
             return;
         }
         
@@ -147,7 +159,7 @@ void loop() {
         Serial.println(msgDef->units);
     }
 }
-```
+
 
 ### ids:
 here is a list of recognised id messages that this library can use:
